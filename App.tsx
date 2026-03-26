@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, Platform, StatusBar as RNStatusBar } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, SafeAreaView, Platform, StatusBar as RNStatusBar } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import TaskList from './src/components/TaskList';
+import Task from './src/components/Task';
 import { addTask, deleteTask, getAllTasks, updateTask, TaskItem } from './src/utils/handle-api';
 
 export default function App() {
@@ -47,11 +47,16 @@ export default function App() {
           </TouchableOpacity>
         </View>
 
-        <TaskList
-          tasks={tasks}
-          updateMode={updateMode}
-          deleteToDo={(_id) => deleteTask(_id, setTasks)}
-        />
+        <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
+          {tasks.map((item) => (
+            <Task
+              key={item._id}
+              text={item.text}
+              updateMode={() => updateMode(item._id, item.text)}
+              deleteToDo={() => deleteTask(item._id, setTasks)}
+            />
+          ))}
+        </ScrollView>
       </View>
       <StatusBar style="auto" />
     </SafeAreaView>
@@ -105,5 +110,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-
+  list: {
+    marginTop: 16,
+    flex: 1,
+  },
+  listContent: {
+    paddingBottom: 24,
+  }
 });
