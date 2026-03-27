@@ -33,7 +33,7 @@ export default function App() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <Image
-          source={{ uri: "https://i.imgur.com/0y8Ftya.png" }}
+          source={require('./assets/task-app-banner.png')}
           style={styles.logo}
           resizeMode="contain"
         />
