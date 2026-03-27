@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, SafeAreaView, Platform, StatusBar as RNStatusBar, Image, Button } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, Platform, StatusBar as RNStatusBar, Image, Button } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import Task from './src/components/Task';
+import TaskList from './src/components/TaskList';
 import { addTask, deleteTask, deleteAllTasks, getAllTasks, updateTask, TaskItem } from './src/utils/handle-api';
 
 export default function App() {
@@ -9,6 +9,15 @@ export default function App() {
   const [text, setText] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [taskId, setTaskId] = useState("");
+  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+
+  const toggleComplete = (id: string) => {
+    setCompletedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
 
   useEffect(() => {
     getAllTasks(setTasks);
@@ -72,16 +81,13 @@ export default function App() {
           </View>
         )}
 
-        <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
-          {tasks.map((item) => (
-            <Task
-              key={item._id}
-              text={item.text}
-              updateMode={() => updateMode(item._id, item.text)}
-              deleteToDo={() => deleteTask(item._id, setTasks)}
-            />
-          ))}
-        </ScrollView>
+        <TaskList
+          tasks={tasks}
+          completedIds={completedIds}
+          onUpdate={(id, text) => updateMode(id, text)}
+          onDelete={(id) => deleteTask(id, setTasks)}
+          onToggleComplete={toggleComplete}
+        />
       </View>
       <StatusBar style="auto" />
     </SafeAreaView>
@@ -162,11 +168,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-  list: {
-    marginTop: 16,
-    flex: 1,
-  },
-  listContent: {
-    paddingBottom: 24,
-  }
 });
