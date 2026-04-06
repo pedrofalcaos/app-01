@@ -1,11 +1,13 @@
 import axios from 'axios';
 import React from 'react';
 
-const baseURL = 'https://todo-app-express-backend-rtbt.onrender.com';
+const baseURL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000';
 
 export interface TaskItem {
   _id: string;
   text: string;
+  completed?: boolean;
+  dueDate?: string | null;
 }
 
 export const getAllTasks = (setTasks: React.Dispatch<React.SetStateAction<TaskItem[]>>) => {
@@ -16,11 +18,13 @@ export const getAllTasks = (setTasks: React.Dispatch<React.SetStateAction<TaskIt
 
 export const addTask = (
   text: string,
+  completed: boolean,
+  dueDate: string | null,
   setText: React.Dispatch<React.SetStateAction<string>>,
   setTasks: React.Dispatch<React.SetStateAction<TaskItem[]>>
 ) => {
   axios
-    .post(`${baseURL}/save`, { text })
+    .post(`${baseURL}/save`, { text, completed, dueDate })
     .then(() => {
       setText('');
       getAllTasks(setTasks);
@@ -31,12 +35,14 @@ export const addTask = (
 export const updateTask = (
   taskId: string,
   text: string,
+  completed: boolean,
+  dueDate: string | null,
   setTasks: React.Dispatch<React.SetStateAction<TaskItem[]>>,
   setText: React.Dispatch<React.SetStateAction<string>>,
   setIsUpdating: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   axios
-    .post(`${baseURL}/update`, { _id: taskId, text })
+    .post(`${baseURL}/update`, { _id: taskId, text, completed, dueDate })
     .then(() => {
       setText('');
       setIsUpdating(false);

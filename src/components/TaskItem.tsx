@@ -3,6 +3,9 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Feather, AntDesign } from '@expo/vector-icons';
 import { TaskItem as TaskData } from '../utils/handle-api';
 
+const formatDate = (iso: string) =>
+  new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
 interface Props {
   task: TaskData;
   isCompleted: boolean;
@@ -15,14 +18,17 @@ const TaskItem: React.FC<Props> = ({ task, isCompleted, onUpdate, onDelete, onTo
   return (
     <View style={[styles.todo, isCompleted && styles.completedTodo]}>
       <TouchableOpacity onPress={onToggleComplete}>
-        <AntDesign
-          name={isCompleted ? 'checkcircle' : 'checkcircleo'}
-          size={20}
-          color="#fff"
-          style={styles.icon}
-        />
+        {isCompleted
+          ? <AntDesign name="check-circle" size={20} color="#fff" style={styles.icon} />
+          : <Feather name="circle" size={20} color="#fff" style={styles.icon} />
+        }
       </TouchableOpacity>
-      <Text style={[styles.text, isCompleted && styles.completedText]}>{task.text}</Text>
+      <View style={styles.textContainer}>
+        <Text style={[styles.text, isCompleted && styles.completedText]}>{task.text}</Text>
+        {task.dueDate && (
+          <Text style={styles.dateText}>Até: {formatDate(task.dueDate)}</Text>
+        )}
+      </View>
       <View style={styles.icons}>
         {!isCompleted && (
           <TouchableOpacity onPress={onUpdate}>
@@ -50,11 +56,18 @@ const styles = StyleSheet.create({
   completedTodo: {
     backgroundColor: '#555',
   },
+  textContainer: {
+    flex: 1,
+    marginHorizontal: 12,
+  },
   text: {
     color: '#fff',
     fontSize: 16,
-    flex: 1,
-    marginHorizontal: 12,
+  },
+  dateText: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 12,
+    marginTop: 2,
   },
   completedText: {
     textDecorationLine: 'line-through',

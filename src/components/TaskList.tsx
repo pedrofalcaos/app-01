@@ -11,7 +11,7 @@ interface Section {
 interface Props {
   tasks: TaskData[];
   completedIds: Set<string>;
-  onUpdate: (id: string, text: string) => void;
+  onUpdate: (id: string, text: string, dueDate: string | null) => void;
   onDelete: (id: string) => void;
   onToggleComplete: (id: string) => void;
 }
@@ -41,7 +41,7 @@ const TaskList: React.FC<Props> = ({ tasks, completedIds, onUpdate, onDelete, on
         <TaskItem
           task={item}
           isCompleted={completedIds.has(item._id)}
-          onUpdate={() => onUpdate(item._id, item.text)}
+          onUpdate={() => onUpdate(item._id, item.text, item.dueDate ?? null)}
           onDelete={() => onDelete(item._id)}
           onToggleComplete={() => onToggleComplete(item._id)}
         />
